@@ -1,0 +1,1 @@
+export { PostDetailedPage } from './ui/index'

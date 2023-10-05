@@ -1,0 +1,30 @@
+.comment {
+    display: flex;
+    width: 35rem;
+    padding: 1.25rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+    background: #d9d9d9;
+
+    h1 {
+        color: #226dff;
+        color: #000;
+        font-size: 1rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        text-align: left;
+    }
+    h1::before {
+        color: #226dff;
+        font-size: 1rem;
+        content: '●';
+        margin-right: 0.5rem;
+    }
+    
+    h3 {
+        color: #000;
+        font-size: 1rem;
+        font-weight: 400;
+    }
+}
