@@ -18,17 +18,22 @@ export const PostsList = () => {
         if ((document.documentElement.scrollHeight - (document.documentElement.scrollTop + window.innerHeight) < 100)
         && (posts.length < totalCount)) {
             setIsFetching(true)
+            console.log(currentPage, '= page')
         }
-    }, [posts, isFetching]);
+    }, [posts.length, totalCount, currentPage]);
 
     useEffect(() => {
         if (isFetching && data) {
-            setPosts(prevPosts => [...prevPosts, ...data.apiResponse])
-            setTotalCount(data.totalCount)
+            const newPosts = [...posts, ...data.apiResponse]
+            const newTotalCount = data.totalCount;
+            const newPage = currentPage + 1;
+
+            setPosts(newPosts)
+            setTotalCount(newTotalCount)
+            setCurrentPage(newPage)
             setIsFetching(false)
-            setCurrentPage(prevState => prevState + 1)
         }
-    }, [isFetching, data])
+    }, [isFetching, data, currentPage, posts])
 
     useEffect(() => {
         document.addEventListener('scroll', scrollHandler)
