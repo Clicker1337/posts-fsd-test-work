@@ -1,53 +1,47 @@
-import {useCallback, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {PostItem} from '../../../entities/Post'
 import {postApi} from '../../../entities/Post/model/PostsService'
+import {useInView} from 'react-intersection-observer';
 import s from './styles.module.scss'
 import {IPost} from '../../../app/types/IPost'
 
+const CURRENT_LIMIT = 10;
+const DEFAULT_PAGE = 1;
+const DEFAULT_POSTS: IPost[] = [];
+const DEFAULT_TOTAL_POSTS = 100;
+const ONE_PAGE = 1;
+const DEFAULT_THRESHOLD = 0.00001;
+
 export const PostsList = () => {
-    const currentLimit = 10;
+    const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE);
+    const [posts, setPosts] = useState<IPost[]>(DEFAULT_POSTS)
+    const [totalPosts, setTotalPosts] = useState(DEFAULT_TOTAL_POSTS)
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [posts, setPosts] = useState<IPost[]>([])
-    const [isFetching, setIsFetching] = useState(true)
-    const [totalCount, setTotalCount] = useState(1)
-
-    const {data} = postApi.useFetchAllPostsQuery({limit: currentLimit, page: currentPage})
-
-    const scrollHandler = useCallback((): void => {
-        if ((document.documentElement.scrollHeight - (document.documentElement.scrollTop + window.innerHeight) < 100)
-        && (posts.length < totalCount)) {
-            setIsFetching(true)
-            console.log(currentPage, '= page')
+    const {ref} = useInView({
+        threshold: DEFAULT_THRESHOLD,
+        onChange: (inView) => {
+            if (inView && (posts.length < totalPosts)) {
+                setCurrentPage(currentPage + ONE_PAGE)
+            }
         }
-    }, [posts.length, totalCount, currentPage]);
+    });
+
+    const {data, isLoading} = postApi.useFetchAllPostsQuery({limit: CURRENT_LIMIT, page: currentPage})
 
     useEffect(() => {
-        if (isFetching && data) {
-            const newPosts = [...posts, ...data.apiResponse]
-            const newTotalCount = data.totalCount;
-            const newPage = currentPage + 1;
-
-            setPosts(newPosts)
-            setTotalCount(newTotalCount)
-            setCurrentPage(newPage)
-            setIsFetching(false)
+        if (data) {
+            setTotalPosts(data.totalCount)
+            setPosts([...posts, ...data.apiResponse])
         }
-    }, [isFetching, data, currentPage, posts])
-
-    useEffect(() => {
-        document.addEventListener('scroll', scrollHandler)
-        return function () {
-            document.removeEventListener('scroll', scrollHandler)
-        };
-    }, [scrollHandler])
+    }, [data])
 
     return (
         <div className={s.posts}>
             {posts && posts.map(post =>
                 <PostItem key={post.id} post={post} />
             )}
-            {isFetching && <h1>Загрузка...</h1>}
+            {!isLoading && <span ref={ref} />}
+            {isLoading && <h1>Загрузка...</h1>}
         </div>
     )
 }
