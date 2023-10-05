@@ -1,5 +1,5 @@
 export const ROUTE_CONSTANTS = {
-    HOME: '/posts',
+    HOME: '/',
     POST: '/posts/:id',
     NOT_FOUND: '/404',
   };

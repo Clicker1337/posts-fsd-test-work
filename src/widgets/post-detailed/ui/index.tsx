@@ -31,7 +31,7 @@ export const PostDetailed = () => {
                     </section>
                 </div>
             }
-            <button onClick={() => navigate('/posts')}>Назад</button>
+            <button onClick={() => navigate('/')}>Назад</button>
         </div>
     )
 }
