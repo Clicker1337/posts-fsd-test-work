@@ -5,7 +5,7 @@ import s from './styles.module.scss'
 export const PostsPage = () => {
     return (
         <div className={s.posts}>
-            <Title text_of_title='ПОСТЫ' />
+            <Title textOfTitle='ПОСТЫ' />
             <PostsList />
         </div>
     )
